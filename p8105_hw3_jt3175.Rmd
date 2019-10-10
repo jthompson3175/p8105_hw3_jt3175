@@ -31,3 +31,16 @@ library(p8105.datasets)
 data("instacart")
 ```
 
+The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and giving illstrative examples of observations. 
+
+```{r}
+# Look at a random person's order info for an illustrative example
+set.seed(5)
+instacart_sample = instacart %>% 
+  filter(user_id == sample(pull(instacart, user_id), 1)) 
+```
+
+The instacart dataset contains detailed information from online grocery orders from 2017. It contains `r nrow(instacart)` observations and `r ncol(instacart)` variables. The dataset is organized by order. Within each order, there is one row for each item purchased, and these items have  an ID and description given by _product_id_ and _product_name_. Each customer and order have a unique ID, represented by the variables _user_id_ and _order_id_. The dataset also contai
+ns IDs and names for each aisle and department from which every item came. There are `r n_distinct(pull(instacart, order_id))` distinct orders, made by `r n_distinct(pull(instacart, user_id))` different customers. Therefore, this dataset contains one order per customer. There is not a case of the same customer havind multiple orders here. 
+
+For example, we can look at the order for the customer with _user_id_ `r min(pull(instacart_sample, user_id))`. That customer ordered `r nrow(instacart_sample)` items, including "`r min(pull(instacart_sample, product_name))`." Customer `r min(pull(instacart_sample, user_id))` had ordered `r sum(pull(instacart_sample, reordered))` of the `r nrow(instacart_sample)` items previously. 
