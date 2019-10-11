@@ -86,10 +86,22 @@ ggplot(aisles_over_10k, aes(x = reorder(aisle, -n), y = n)) +
 Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.
 
 ```{r}
+fav_items = instacart %>% 
+  filter(aisle == c("baking ingredients","dog food care","packaged vegetables fruits")) %>% 
+  group_by(aisle, product_name) %>% 
+  summarize(
+    n = n()
+  ) %>% 
+  top_n(3, n) %>% 
+  arrange(aisle, n)
 
+knitr::kable(fav_items)
 ```
 
 
 Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).
 
+```{r}
+
+```
 
