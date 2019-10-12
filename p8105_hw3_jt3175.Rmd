@@ -9,6 +9,8 @@ output: github_document
 library(tidyverse)
 library(viridis)
 library(ggridges)
+library(patchwork)
+library(p8105.datasets)
 
 knitr::opts_chunk$set(
 	echo = TRUE,
@@ -31,7 +33,6 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 Load the data:
 
 ```{r}
-library(p8105.datasets)
 data("instacart")
 ```
 
@@ -189,9 +190,58 @@ spaghetti =
   labs(
     title = "Data Value by State from 2002 to 2010",
     x = "Year",
-    y = "Data Value"
+    y = "Average Crude Prevalence (%)"
   )
 
-spaghetti + labs(color = "State") 
+spaghetti + 
+  labs(color = "State") +
+  guides(col = guide_legend(ncol = 14))
+```
+
+Make a two-panel plot showing, for the years 2006, and 2010, distribution of data_value for responses (“Poor” to “Excellent”) among locations in NY State.
+
+```{r}
+brfss_NY_2006 = brfss %>% 
+  filter(state == "NY" & year == "2006") %>% 
+  group_by(locationdesc, response) %>% 
+  summarize(
+    avg_data_value = mean(data_value)
+  )
+
+brfss_NY_2010 = brfss %>% 
+  filter(state == "NY" & year == "2010") %>% 
+  group_by(locationdesc, response) %>% 
+  summarize(
+    avg_data_value = mean(data_value)
+  )
+
+NY_2006 = 
+  ggplot(brfss_NY_2006, aes(x = response, y = avg_data_value, color = locationdesc, group = locationdesc)) +
+  geom_point() +
+  geom_line() +
+  labs(
+    title = "Average Crude Prevalence for Response Among NY State Locations",
+    subtitle = "2006",
+    x = "Response",
+    y = "Average Crude Prevalence (%)"
+  ) 
+
+NY_2006 = 
+  NY_2006 +
+  theme(legend.position = "none")
+
+
+NY_2010 =
+  ggplot(brfss_NY_2010, aes(x = response, y = avg_data_value, color = locationdesc, group = locationdesc)) +
+  geom_point() +
+  geom_line() +
+  labs(
+    title = "",
+    subtitle = "2010",
+    x = "Response",
+    y = "Average Crude Prevalence (%)"
+  )
+
+(NY_2006/NY_2010)
 ```
 
