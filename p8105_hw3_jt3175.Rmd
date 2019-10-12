@@ -245,3 +245,37 @@ NY_2010 =
 (NY_2006/NY_2010)
 ```
 
+## Problem 3
+
+```{r}
+acc_data = read_csv("./data/accel_data.csv")
+```
+
+Load, tidy, and otherwise wrangle the data. Your final dataset should include all originally observed variables and values; have useful variable names; include a weekday vs weekend variable; and encode data with reasonable variable classes. Describe the resulting dataset (e.g. what variables exist, how many observations, etc)
+
+```{r}
+acc_data_long = acc_data %>% 
+  pivot_longer(
+    cols = activity.1:activity.1440,
+    names_to = "activity_number",
+    values_to = "activity_counts",
+    names_prefix = "activity.",
+  ) %>% 
+  rename(
+    day_of_week = day
+  ) %>% 
+  mutate(
+    day_of_week = factor(day_of_week, 
+                         levels = c("Monday", 
+                                    "Tuesday", 
+                                    "Wednesday", 
+                                    "Thursday", 
+                                    "Friday", 
+                                    "Saturday", 
+                                    "Sunday")),
+    is_weekend = (as.numeric(day_of_week) == 6| as.numeric(day_of_week) == 7)
+  )
+```
+
+Traditional analyses of accelerometer data focus on the total activity over the day. Using your tidied dataset, aggregate accross minutes to create a total activity variable for each day, and create a table showing these totals. Are any trends apparent?
+
