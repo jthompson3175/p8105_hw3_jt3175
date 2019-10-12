@@ -309,8 +309,15 @@ plot =
   ggplot(acc_by_dow, aes(x = activity_number, y = avg_value, color = day_of_week)) +
   geom_smooth(se=FALSE) +
   scale_x_discrete(limit = c(240,480,720,960,1200,1440), 
-                   labels=c("4", "8", "12", "16", "20", "24"))
+                   labels=c("4", "8", "12", "16", "20", "24")) +
+  labs(
+    title = "Average 24 Hour Activity Time Courses for Each Day of the Week",
+    x = "Activity Number (hrs)",
+    y = "Average Activity Counts"
+  )
 
+plot + labs(color = "Day of the Week")
+  
 
 ```
 
