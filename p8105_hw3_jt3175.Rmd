@@ -30,7 +30,7 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 ## Problem 1
 
-Loading the _Instacart_ data and pulling a random sample for an example:
+Pulling a random sample for an example:
 
 ```{r}
 data("instacart")
@@ -43,10 +43,7 @@ instacart_sample = instacart %>%
   filter(user_id == sample(pull(instacart, user_id), 1)) 
 ```
 
-The instacart dataset contains detailed information from online grocery orders from 2017. It contains `r nrow(instacart)` observations and `r ncol(instacart)` variables. The dataset is organized by order. Within each order, there is one row for each item purchased, and these items have  an ID and description given by _product_id_ and _product_name_. Each customer and order have a unique ID, represented by the variables _user_id_ and _order_id_. The dataset also contai
-ns IDs and names for each aisle and department from which every item came. There are `r n_distinct(pull(instacart, order_id))` distinct orders, made by `r n_distinct(pull(instacart, user_id))` different customers. Therefore, this dataset contains one order per customer. There is not a case of the same customer havind multiple orders here. 
-
-For example, we can look at the order for the customer with _user_id_ `r min(pull(instacart_sample, user_id))`. That customer ordered `r nrow(instacart_sample)` items, including "`r min(pull(instacart_sample, product_name))`." Customer `r min(pull(instacart_sample, user_id))` had ordered `r sum(pull(instacart_sample, reordered))` of the `r nrow(instacart_sample)` items previously. 
+The instacart dataset contains detailed information from online grocery orders from 2017. It contains `r nrow(instacart)` observations and `r ncol(instacart)` variables. The dataset is organized by order. Within each order, there is one row for each item purchased, and these items have  an ID and description given by _product_id_ and _product_name_. Each customer and order have a unique ID, represented by the variables _user_id_ and _order_id_. The dataset also contains IDs and names for each aisle and department from which every item came. There are `r n_distinct(pull(instacart, order_id))` distinct orders, made by `r n_distinct(pull(instacart, user_id))` different customers. Therefore, this dataset contains one order per customer. There is not a case of the same customer havind multiple orders here. We can look at the order for the customer with _user_id_ `r min(pull(instacart_sample, user_id))`. That customer ordered `r nrow(instacart_sample)` items, including "`r min(pull(instacart_sample, product_name))`." Customer `r min(pull(instacart_sample, user_id))` had ordered `r sum(pull(instacart_sample, reordered))` of the `r nrow(instacart_sample)` items previously. 
 
 ```{r}
 top_aisles = 
@@ -123,13 +120,9 @@ The below table shows the average hour of the day at which Pink Lady Apples and 
 
 ## Problem 2
 
-Loaded in the _brfss_smart2010_ data and cleaned it. Created a new dataset, _brfss_, that only contained the "Overall Health" topic and responses from "Poor" to "Excellent", which were organized in ascending order that way as a factor variable.
-
 ```{r}
 data("brfss_smart2010")
-```
 
-```{r}
 brfss = brfss_smart2010 %>% 
   janitor::clean_names() %>% 
   filter(topic == "Overall Health") %>% 
@@ -243,13 +236,9 @@ NY_2010 =
 
 ## Problem 3
 
-Loaded and tidied the _accel_data_. Created a final dataset, _acc_data_long_ that includes the same variables and values, just in a longer and tidied format.
-
 ```{r}
 acc_data = read_csv("./data/accel_data.csv")
-```
 
-```{r}
 acc_data_long = acc_data %>% 
   pivot_longer(
     cols = activity.1:activity.1440,
@@ -278,7 +267,6 @@ total_act =
 knitr::kable(total_act)
 
 # Look at trends
-
 ggplot(total_act, aes(x = day_id, y = total_activity))+
   geom_point() +
   geom_line() +
@@ -289,7 +277,7 @@ ggplot(total_act, aes(x = day_id, y = total_activity))+
   )
 ```
 
-Accelerometer data allows the inspection activity over the course of the day. Make a single-panel plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week. Describe in words any patterns or conclusions you can make based on this graph
+Aggregated across minutes to create a total activity variable for each day, and created a table showing these totals. Created a simple graph to make the trends easier to see. We notice that there is an oscillating trend, in other words the activity count typically is high one day and lower the next. Additionally, the activity counts are generally lower after day 20 than before.
 
 ```{r}
 acc_by_dow = acc_data_long %>% 
@@ -300,19 +288,6 @@ acc_by_dow = acc_data_long %>%
   summarize(
     avg_value = mean(activity_counts)
   )
-
-plot_point = 
-  ggplot(acc_by_dow, aes(x = activity_number, y = avg_value, color = day_of_week)) +
-  geom_point() +
-  scale_x_discrete(limit = c(240,480,720,960,1200,1440), 
-                   labels=c("4", "8", "12", "16", "20", "24")) +
-  labs(
-    title = "Average 24 Hour Activity Time Courses for Each Day of the Week",
-    x = "Activity Number (hrs)",
-    y = "Average Activity Counts"
-  )
-
-plot_point + labs(color = "Day of the Week")
 
 plot_smooth = 
   ggplot(acc_by_dow, aes(x = activity_number, y = avg_value, color = day_of_week)) +
@@ -326,6 +301,6 @@ plot_smooth =
   )
 
 plot_smooth + labs(color = "Day of the Week")
-
 ```
 
+Created a single-panel plot showing the average 24-hour activity time courses for each day of the week. We can see on all days of the week that there is little activity before 4:00, which makes sense. The activity levels slowly climb between 4:00 and 8:00, and then are relatively high between 8:00 and 20:00. After 20:00, they start to decline as people go to bed for the evening. The main variants from those trends are Sunday and Friday. People tend to have higher activity on Sunday mornings (between 8:00 and 12:00) and Friday nights (between 18:00 and 22:00).
