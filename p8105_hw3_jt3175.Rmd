@@ -243,11 +243,11 @@ NY_2010 =
 
 ## Problem 3
 
+Loaded and tidied the _accel_data_. Created a final dataset, _acc_data_long_ that includes the same variables and values, just in a longer and tidied format.
+
 ```{r}
 acc_data = read_csv("./data/accel_data.csv")
 ```
-
-Load, tidy, and otherwise wrangle the data. Your final dataset should include all originally observed variables and values; have useful variable names; include a weekday vs weekend variable; and encode data with reasonable variable classes. Describe the resulting dataset (e.g. what variables exist, how many observations, etc)
 
 ```{r}
 acc_data_long = acc_data %>% 
@@ -265,7 +265,7 @@ acc_data_long = acc_data %>%
     )
 ```
 
-Traditional analyses of accelerometer data focus on the total activity over the day. Using your tidied dataset, aggregate accross minutes to create a total activity variable for each day, and create a table showing these totals. Are any trends apparent?
+The above dataset, _acc_data_long_, contains `r ncol(acc_data_long)` variables and `r nrow(acc_data_long)` observations. It contains variables for week (`r min(pull(acc_data_long, week))` to `r max(pull(acc_data_long, week))`), day ID (`r min(pull(acc_data_long, day_id))` to `r max(pull(acc_data_long, day_id))`), and day of the week (Sunday to Saturday). Activity number gives the minute in the 24 hour period, and activity count is the actual activity measurement. In addition, there is a variable _is_weekend_ that is _TRUE_ when the day of the week is a weekend, and _FALSE_ otherwise.
 
 ```{r}
 total_act = 
@@ -294,7 +294,7 @@ Accelerometer data allows the inspection activity over the course of the day. Ma
 ```{r}
 acc_by_dow = acc_data_long %>% 
   mutate(
-    activity_number = as.numeric(as.character(activity_number))
+   activity_number = as.numeric(as.character(activity_number)) 
   ) %>% 
   group_by(day_of_week, activity_number) %>% 
   summarize(
