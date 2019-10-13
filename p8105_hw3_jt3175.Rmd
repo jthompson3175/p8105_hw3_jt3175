@@ -30,16 +30,14 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 ## Problem 1
 
-Load the data:
+Loading the _Instacart_ data and pulling a random sample for an example:
 
 ```{r}
 data("instacart")
 ```
 
-The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and giving illstrative examples of observations. 
-
 ```{r}
-# Look at a random person's order info for an illustrative example
+# Look at a random person's order info for an example
 set.seed(5)
 instacart_sample = instacart %>% 
   filter(user_id == sample(pull(instacart, user_id), 1)) 
@@ -50,23 +48,17 @@ ns IDs and names for each aisle and department from which every item came. There
 
 For example, we can look at the order for the customer with _user_id_ `r min(pull(instacart_sample, user_id))`. That customer ordered `r nrow(instacart_sample)` items, including "`r min(pull(instacart_sample, product_name))`." Customer `r min(pull(instacart_sample, user_id))` had ordered `r sum(pull(instacart_sample, reordered))` of the `r nrow(instacart_sample)` items previously. 
 
-How many aisles are there, and which aisles are the most items ordered from?
-
 ```{r}
-# get number of unique aisles
-n_distinct(pull(instacart, aisle_id))
-
-# sort this, and then show the top 3
 top_aisles = 
   instacart %>% 
   count(aisle) %>% 
   arrange(desc(n)) %>% 
   top_n(3, n)
-
-knitr::kable(top_aisles)
 ```
 
-Make a plot that shows the number of items ordered in each aisle, limiting this to aisles with more than 10000 items ordered. Arrange aisles sensibly, and organize your plot so others can read it.
+There are `r n_distinct(pull(instacart, aisle_id))` aisles, and from the below table, we see that the top 3 aisles most items are ordered from are fresh vegetables, fresh fruits, and packaged vegetables fruits. Here, n represents the total number of items ordered from the respective aisle.
+
+`r knitr::kable(top_aisles)`
 
 ```{r}
 aisles_over_10k = 
@@ -86,7 +78,7 @@ ggplot(aisles_over_10k, aes(x = reorder(aisle, -n), y = n)) +
   )
 ```
 
-Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.
+The above plot shows the number of items ordered in each aisle for aisles with more than 10,000 items ordered. We can see the same 3 items shown in the chart: _fresh vegetables_, _fresh fruits_, and _packaged vegetables fruits_. The majority of the aisles have less than 25,000 items ordered, with the _butter_ aisle having the least (in the > 10,000 category). I found it surprising that _water seltzer sparkling water_ ranked so high in number of items bought. 
 
 ```{r}
 fav_items = instacart %>% 
@@ -97,12 +89,11 @@ fav_items = instacart %>%
   ) %>% 
   top_n(3, n) %>% 
   arrange(aisle, n)
-
-knitr::kable(fav_items)
 ```
 
+The below table shows the three most popular items in _baking ingredients_, _dog food care_, and _packaged vegetables fruits_, and the number of times each item was ordered. The _dog food care_ aisle's top 3 items were all much lower than the _baking ingredients_ and _packaged vegetables fruits_, which makes sense. 
 
-Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).
+`r knitr::kable(fav_items)`
 
 ```{r}
 hr_of_day = instacart %>% 
@@ -124,22 +115,19 @@ hr_of_day = instacart %>%
     Friday    = `5`, 
     Saturday  = `6`
   )
-
-knitr::kable(hr_of_day)
 ```
 
+The below table shows the average hour of the day at which Pink Lady Apples and Coffee Ice Cream were ordered on each day of the week. It is important to note that we assumed 0 corresponded to Sunday in the dataset. We can see that people generally ordered Coffee Ice Cream a little bit later in the day than Pink Lady Apples, other than on Fridays.
+
+`r knitr::kable(hr_of_day, digits = 2)`
+
 ## Problem 2
+
+Loaded in the _brfss_smart2010_ data and cleaned it. Created a new dataset, _brfss_, that only contained the "Overall Health" topic and responses from "Poor" to "Excellent", which were organized in ascending order that way as a factor variable.
 
 ```{r}
 data("brfss_smart2010")
 ```
-
-First, do some data cleaning:
-
-format the data to use appropriate variable names;
-focus on the “Overall Health” topic
-include only responses from “Excellent” to “Poor”
-organize responses as a factor taking levels ordered from “Poor” to “Excellent”
 
 ```{r}
 brfss = brfss_smart2010 %>% 
@@ -150,8 +138,6 @@ brfss = brfss_smart2010 %>%
   ) %>% 
   rename(state = locationabbr)
 ```
-
-In 2002, which states were observed at 7 or more locations? What about in 2010?
 
 ```{r}
 brfss_2002 = brfss %>% 
@@ -169,10 +155,15 @@ brfss_2010 = brfss %>%
     n_dist = n_distinct(locationdesc)
   ) %>% 
   filter(n_dist >= 7)
-
-knitr::kable(brfss_2002)
-knitr::kable(brfss_2010)
 ```
+
+In 2002, we see that there were `r nrow(brfss_2002)` states that were observed at 7 or more locations. The below table gives the states as well as the corresponding number of locations. 
+
+`r knitr::kable(brfss_2002)`
+
+In 2010, there were `r nrow(brfss_2010)` states that were observed at 7 or more locations. The below table shows the states and number of locations. We see that the number of states observed at 7 or more locations more than doubled between 2002 and 2010. 
+
+`r knitr::kable(brfss_2010)`
 
 Construct a dataset that is limited to Excellent responses, and contains, year, state, and a variable that averages the data_value across locations within a state. Make a “spaghetti” plot of this average value over time within a state (that is, make a plot showing a line for each state across years – the geom_line geometry and group aesthetic will help).
 
@@ -305,7 +296,20 @@ acc_by_dow = acc_data_long %>%
     avg_value = mean(activity_counts)
   )
 
-plot = 
+plot_point = 
+  ggplot(acc_by_dow, aes(x = activity_number, y = avg_value, color = day_of_week)) +
+  geom_point() +
+  scale_x_discrete(limit = c(240,480,720,960,1200,1440), 
+                   labels=c("4", "8", "12", "16", "20", "24")) +
+  labs(
+    title = "Average 24 Hour Activity Time Courses for Each Day of the Week",
+    x = "Activity Number (hrs)",
+    y = "Average Activity Counts"
+  )
+
+plot_point + labs(color = "Day of the Week")
+
+plot_smooth = 
   ggplot(acc_by_dow, aes(x = activity_number, y = avg_value, color = day_of_week)) +
   geom_smooth(se=FALSE) +
   scale_x_discrete(limit = c(240,480,720,960,1200,1440), 
@@ -316,8 +320,7 @@ plot =
     y = "Average Activity Counts"
   )
 
-plot + labs(color = "Day of the Week")
-  
+plot_smooth + labs(color = "Day of the Week")
 
 ```
 
