@@ -165,7 +165,9 @@ In 2010, there were `r nrow(brfss_2010)` states that were observed at 7 or more 
 
 `r knitr::kable(brfss_2010)`
 
-Construct a dataset that is limited to Excellent responses, and contains, year, state, and a variable that averages the data_value across locations within a state. Make a “spaghetti” plot of this average value over time within a state (that is, make a plot showing a line for each state across years – the geom_line geometry and group aesthetic will help).
+Constructed a dataset that is limited to "Excellent" responses. It contains _year_, _state_, and _avg_data_value_, which is a variable that averages the _data_value_ across locations within a state. 
+
+The below spaghetti plot shows the average of crude prevalence (%) over time within a state. For the most part, the crude prevalence is between 15% and 30%, with West Virginia having a noticable sharp decrease in crude prevalence in 2005 and again in 2009. Indianna also had a low crude prevalence in 2007. We also notice that DC has a high prevalence throughout, from 2002 to 2010.
 
 ```{r}
 brfss_excellent = brfss %>% 
@@ -189,7 +191,7 @@ spaghetti +
   guides(col = guide_legend(ncol = 14))
 ```
 
-Make a two-panel plot showing, for the years 2006, and 2010, distribution of data_value for responses (“Poor” to “Excellent”) among locations in NY State.
+Below is a two-panel plot showing, for the years 2006, and 2010, the distribution of average crude prevalence (%) for responses "Poor" to "Excellent" among locations in NY State. We see for both 2006 and 2010, "Poor" responses had a low average crude prevalence for all of the counties. There is a general increasing trend for "Fair" and then "Good" responses, and then "Very good" and "Excellent" taper off. The trends are similar for most counties, though we do see crossover, particularly between "Good" and "Very good" for both 2006 and 2010.
 
 ```{r}
 brfss_NY_2006 = brfss %>% 
@@ -232,6 +234,9 @@ NY_2010 =
     x = "Response",
     y = "Average Crude Prevalence (%)"
   )
+
+NY_2010 = 
+  NY_2010 + labs(color = "County")
 
 (NY_2006/NY_2010)
 ```
